@@ -4,31 +4,18 @@ import axios from "axios";
 import { user, tracks, artists, following } from "../fixtures/testData";
 import UserCard from "../components/UserCard";
 import Link from "next/link";
-import React from "react";
-import ReactDOM from "react-dom";
 import ArtistCard from "../components/ArtistCard";
+import { useState } from "react";
 
-function FadeInSection(props) {
-  const [isVisible, setVisible] = React.useState(false);
-  const domRef = React.useRef();
-  React.useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => setVisible(entry.isIntersecting));
-    });
-    observer.observe(domRef.current);
-  }, []);
-  return (
-    <div
-      className={`fade-in-section ${isVisible ? "is-visible" : ""}`}
-      ref={domRef}
-    >
-      {props.children}
-    </div>
-  );
+const secondsFormat = (miliseconds) => {
+  const seconds = miliseconds/1000
+  if (seconds>=3600){
+    return(new Date(seconds * 1000).toISOString().slice(11, 19))
+  }
+  return(new Date(seconds * 1000).toISOString().slice(14, 19))
 }
 
 const userData = () => {
-  console.log(following);
   return (
     <AltContainer>
       <UserCard
@@ -38,8 +25,8 @@ const userData = () => {
         userFollowers={user.followers.total}
         userFollowing={following.total}
       />
-      <div className="row" style={{ width: "100%", margin: "20px 10px" }}>
-        <div className="col-md-4 col-lg-2">
+      <div className="row" style={{ width: "100%", margin: "20px 20px" }}>
+        <div className="col-md-3 col-lg-2">
           <div
             className="row justify-content-center"
             style={{ textAlign: "center" }}
@@ -58,6 +45,93 @@ const userData = () => {
                   artistName={artist.name}
                   artistFollowers={artist.followers.total}
                 />
+              );
+            })}
+          </div>
+        </div>
+        <div className="col-md-4 col-lg-2">
+          <div
+            className="row justify-content-center"
+            style={{ textAlign: "center" }}
+          >
+            <h2>Top Artists</h2>
+          </div>
+          <div
+            className="row artists"
+            style={{ overflow: "scroll", height: "60vh" }}
+          >
+            {tracks.items.map((track) => {
+              return (
+                <div
+                  className="col-md-12"
+                  style={{
+                    margin: "5px 0px",
+                  }}
+                >
+                  <div
+                    className="row"
+                    style={{ display: "flex", alignItems: "center" }}
+                  >
+                    <div
+                      className="col-md-4"
+                      style={{
+                        background: `url(${track.album.images[0].url})`,
+                        backgroundPosition: "center top",
+                        backgroundSize: "cover",
+                        backgroundRepeat: "no-repeat",
+                        height: "50px",
+                        borderRadius: "5%",
+                        width: "50px",
+                        borderRadius: "15px",
+                      }}
+                    ></div>
+                    <div className="col-md-8" style={{ marginTop: "12px" }}>
+                      <Link
+                        href={track.external_urls.spotify}
+                        style={{ textDecoration: "none", color: "black" }}
+                      >
+                        <div className="row main-track">
+                          <h5 style={{ marginBottom: "0px" }}>{track.name}</h5>
+                        </div>
+                      </Link>
+                      <div className="row">
+                        <div className="col-md-8 track-artist">
+                          <Link
+                            href={track.artists[0].external_urls.spotify}
+                            style={{ textDecoration: "none", color: "black" }}
+                          >
+                            <p
+                              style={{
+                                color: "grey",
+                                fontSize: "12px",
+                                paddingTop: "0",
+                                marginTop: "0",
+                              }}
+                            >
+                              {track.artists[0].name}
+                            </p>
+                          </Link>
+                        </div>
+
+                        <div
+                          className="col-md-4"
+                          style={{ textAlign: "right" }}
+                        >
+                          <p
+                            style={{
+                              color: "grey",
+                              fontSize: "12px",
+                              paddingTop: "0",
+                              marginTop: "0",
+                            }}
+                          >
+                            {secondsFormat(track.duration_ms)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </div>

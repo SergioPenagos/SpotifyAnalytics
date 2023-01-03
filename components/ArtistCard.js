@@ -8,7 +8,7 @@ const ArtistCard = ( props ) => {
                 >
                   <div
                     className="col-md-12"
-                    style={{ border: "1px solid black", borderRadius: "15px" }}
+                    style={{ border: "1px solid black", borderRadius: "15px", margin:"5px 0px" }}
                   >
                     <div
                       className="row justify-content-center"

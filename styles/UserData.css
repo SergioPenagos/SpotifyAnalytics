@@ -6,3 +6,12 @@
   .artists::-webkit-scrollbar {
     display: none;
   }
+
+.main-track:hover {
+  text-decoration: underline solid black;
+}
+
+.track-artist:hover {
+  text-decoration: underline solid grey;
+  opacity: 0.7;
+}

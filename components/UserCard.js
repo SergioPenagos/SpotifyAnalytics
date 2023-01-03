@@ -4,7 +4,7 @@ const UserCard = ( props ) => {
   return (
     <div
       className="row"
-      style={{ padding: "35px 10px 0px 30px", width: "40%" }}
+      style={{ padding: "35px 10px 0px 30px", width: "40%", marginLeft:"10px" }}
     >
       <div
         className="col-md-6 col-lg-4"
