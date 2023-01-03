@@ -1,0 +1,8 @@
+.artists {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .artists::-webkit-scrollbar {
+    display: none;
+  }
