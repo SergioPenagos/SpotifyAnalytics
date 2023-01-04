@@ -5,17 +5,19 @@ import { user, tracks, artists, following } from "../fixtures/testData";
 import UserCard from "../components/UserCard";
 import Link from "next/link";
 import ArtistCard from "../components/ArtistCard";
+import TrackCard from "../components/TrackCard";
 import { useState } from "react";
 
-const secondsFormat = (miliseconds) => {
-  const seconds = miliseconds/1000
-  if (seconds>=3600){
-    return(new Date(seconds * 1000).toISOString().slice(11, 19))
-  }
-  return(new Date(seconds * 1000).toISOString().slice(14, 19))
-}
-
 const userData = () => {
+  const [userSelection, setUserSelection] = useState("Artists");
+  const [selectedArtist, setSelectedArtist] = useState(0);
+
+  const handleSelectorClick = (selection) => {
+    setUserSelection(selection);
+  };
+
+  console.log(userSelection);
+
   return (
     <AltContainer>
       <UserCard
@@ -31,13 +33,69 @@ const userData = () => {
             className="row justify-content-center"
             style={{ textAlign: "center" }}
           >
-            <h2>Top Artists</h2>
+            <h2>Top {userSelection}</h2>
+          </div>
+          <div className="row" style={{marginBottom:"8px"}}>
+            <div
+              className="col-md-6"
+              style={{
+                display: "flex",
+                alignItems: "right",
+                justifyContent: "right",
+              }}
+            >
+              <Link
+                href="#"
+                onClick={() => handleSelectorClick("Artists")}
+                style={{ textDecoration: "none", color: "black", width: "70%" }}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    background: "#A6E664",
+                    borderRadius: "15px",
+                    textAlign: "center",
+                    opacity: userSelection == "Artists" ? 1 : 0.6,
+                    color: "white"
+                  }}
+                >
+                  Artists
+                </div>
+              </Link>
+            </div>
+            <div
+              className="col-md-6"
+              style={{
+                display: "flex",
+                alignItems: "left",
+                justifyContent: "left",
+              }}
+            >
+              <Link
+                href="#"
+                onClick={() => handleSelectorClick("Tracks")}
+                style={{ textDecoration: "none", color: "black", width: "70%" }}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    background: "#A6E664",
+                    borderRadius: "15px",
+                    textAlign: "center",
+                    opacity: userSelection == "Tracks" ? 1 : 0.6,
+                    color: "white"
+                  }}
+                >
+                  Tracks
+                </div>
+              </Link>
+            </div>
           </div>
           <div
             className="row artists"
             style={{ overflow: "scroll", height: "60vh" }}
           >
-            {artists.items.map((artist) => {
+            {userSelection=="Artists" ? artists.items.map((artist, index) => {
               return (
                 <ArtistCard
                   artistUrl={artist.external_urls.spotify}
@@ -46,95 +104,22 @@ const userData = () => {
                   artistFollowers={artist.followers.total}
                 />
               );
-            })}
-          </div>
-        </div>
-        <div className="col-md-4 col-lg-2">
-          <div
-            className="row justify-content-center"
-            style={{ textAlign: "center" }}
-          >
-            <h2>Top Artists</h2>
-          </div>
-          <div
-            className="row artists"
-            style={{ overflow: "scroll", height: "60vh" }}
-          >
-            {tracks.items.map((track) => {
+            }):tracks.items.map((track, index) => {
               return (
-                <div
-                  className="col-md-12"
-                  style={{
-                    margin: "5px 0px",
-                  }}
-                >
-                  <div
-                    className="row"
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <div
-                      className="col-md-4"
-                      style={{
-                        background: `url(${track.album.images[0].url})`,
-                        backgroundPosition: "center top",
-                        backgroundSize: "cover",
-                        backgroundRepeat: "no-repeat",
-                        height: "50px",
-                        borderRadius: "5%",
-                        width: "50px",
-                        borderRadius: "15px",
-                      }}
-                    ></div>
-                    <div className="col-md-8" style={{ marginTop: "12px" }}>
-                      <Link
-                        href={track.external_urls.spotify}
-                        style={{ textDecoration: "none", color: "black" }}
-                      >
-                        <div className="row main-track">
-                          <h5 style={{ marginBottom: "0px" }}>{track.name}</h5>
-                        </div>
-                      </Link>
-                      <div className="row">
-                        <div className="col-md-8 track-artist">
-                          <Link
-                            href={track.artists[0].external_urls.spotify}
-                            style={{ textDecoration: "none", color: "black" }}
-                          >
-                            <p
-                              style={{
-                                color: "grey",
-                                fontSize: "12px",
-                                paddingTop: "0",
-                                marginTop: "0",
-                              }}
-                            >
-                              {track.artists[0].name}
-                            </p>
-                          </Link>
-                        </div>
-
-                        <div
-                          className="col-md-4"
-                          style={{ textAlign: "right" }}
-                        >
-                          <p
-                            style={{
-                              color: "grey",
-                              fontSize: "12px",
-                              paddingTop: "0",
-                              marginTop: "0",
-                            }}
-                          >
-                            {secondsFormat(track.duration_ms)}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <TrackCard
+                  trackImage={track.album.images[0].url}
+                  trackUrl={track.external_urls.spotify}
+                  trackName={track.name}
+                  artistUrl={track.artists[0].external_urls.spotify}
+                  artistName={track.artists[0].name}
+                  duration={track.duration_ms}
+                />
               );
             })}
           </div>
+        </div>
+        <div className="col-md-9 col-lg-10">
+          <div className="row" style={{display:"flex", textAlign:"center", paddingLeft:"10px"}}> Hello</div>
         </div>
       </div>
     </AltContainer>
