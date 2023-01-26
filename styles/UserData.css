@@ -15,3 +15,7 @@
   text-decoration: underline solid grey;
   opacity: 0.7;
 }
+
+.artis-selection:hover {
+  background-color: rgba(166, 230, 100,0.7);
+}

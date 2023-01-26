@@ -1,14 +1,10 @@
 import Link from "next/link";
 
-const ArtistCard = (props) => {
+const MainArtist = (props) => {
   return (
-    <Link
-      href="#"
-      style={{ textDecoration: "none", color: "black" }}
-      onClick={() => props.changeSelection(props.artistId, props.spotifyId)}
-    >
+    <Link href={props.artistUrl} style={{ textDecoration: "none", color: "black", width: "180px" }}>
       <div
-        className="artis-selection col-md-12"
+        className="col-md-12"
         style={{
           borderRadius: "15px",
           margin: "5px 0px",
@@ -24,15 +20,16 @@ const ArtistCard = (props) => {
               backgroundPosition: "center top",
               backgroundSize: "cover",
               backgroundRepeat: "no-repeat",
-              height: "120px",
-              width: "120px",
-              borderRadius: "50%",
+              height: "180px",
+              width: "180px",
+              borderRadius: "15px",
               border: props.selected ? "4px solid #A6E664" : null,
+              marginBottom: "30px"
             }}
           />
         </div>
         <div className="row" style={{ textAlign: "center" }}>
-          <h5>{props.artistName}</h5>
+          <h2>{props.artistName}</h2>
         </div>
         <div
           className="row"
@@ -45,7 +42,7 @@ const ArtistCard = (props) => {
           <p
             style={{
               color: "grey",
-              fontSize: "10px",
+              fontSize: "20px",
               paddingBottom: "0",
               marginBottom: "0",
             }}
@@ -64,7 +61,7 @@ const ArtistCard = (props) => {
           <p
             style={{
               color: "grey",
-              fontSize: "10px",
+              fontSize: "20px",
               paddingTop: "0",
               marginTop: "0",
             }}
@@ -77,4 +74,4 @@ const ArtistCard = (props) => {
   );
 };
 
-export default ArtistCard;
+export default MainArtist;

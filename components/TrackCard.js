@@ -8,28 +8,46 @@ const secondsFormat = (miliseconds) => {
   return new Date(seconds * 1000).toISOString().slice(14, 19);
 };
 
-const TrackCard = ( props ) => {
+const TrackCard = (props) => {
   return (
     <div
       className="col-md-12"
       style={{
         margin: "5px 0px",
+        padding: "0px"
       }}
     >
-      <div className="row" style={{ display: "flex", alignItems: "center" }}>
-        <div
-          className="col-md-4"
-          style={{
-            background: `url(${props.trackImage})`,
-            backgroundPosition: "center top",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            height: "50px",
-            borderRadius: "5%",
-            width: "50px",
-            borderRadius: "15px",
-          }}
-        ></div>
+      <div
+        className="row justify-content-center"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          borderRadius: "15px",
+          textAlign: "center",
+          paddingTop: "5px"
+        }}
+      >
+        <Link
+          href="#"
+          onClick={() => props.changeSelection(props.trackId)}
+          style={{ height: "80px", width: "80px", padding:"0px" }}
+        >
+          <div
+            style={{
+              background: `url(${props.trackImage})`,
+              backgroundPosition: "center top",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+              height: "80px",
+              width: "80px",
+              borderRadius: "15px",
+              border: props.selected ? "4px solid #A6E664" : null,
+              marginRight: "0px",
+            }}
+          ></div>
+        </Link>
+      </div>
+      <div className="row justify-content-center">
         <div className="col-md-8" style={{ marginTop: "12px" }}>
           <Link
             href={props.trackUrl}

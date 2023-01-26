@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 const UserCard = ( props ) => {
+  console.log(props.selected)
   return (
     <div
       className="row"
@@ -15,7 +16,7 @@ const UserCard = ( props ) => {
           backgroundRepeat: "no-repeat",
           height: "90px",
           borderRadius: "5%",
-          width: "90px",
+          width: "90px"
         }}
       />
       <div className="col-md-6 col-lg-8">
