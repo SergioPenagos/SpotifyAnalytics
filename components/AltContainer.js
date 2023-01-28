@@ -8,7 +8,7 @@ const AltContainer = (props) => {
           style={{
             display: "block",
             width: "100%",
-            height: "90vh",
+            
             background:"white",
             borderRadius: "3%",
             margin:"0px 150px",
