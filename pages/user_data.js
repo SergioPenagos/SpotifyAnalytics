@@ -1,16 +1,12 @@
 import AltContainer from "../components/AltContainer";
-import qs from "qs";
 import axios from "axios";
-import { user, tracks, artists, following, albums } from "../fixtures/testData";
 import UserCard from "../components/UserCard";
 import Link from "next/link";
 import ArtistCard from "../components/ArtistCard";
 import TrackCard from "../components/TrackCard";
 import { useState, useEffect } from "react";
 import MainArtist from "../components/MainArtist";
-import { animated, useSpring } from "react-spring";
-import { useScroll } from "react-use-gesture";
-import { getSession } from "next-auth/react";
+import AlbumsCarrousel from "../components/AlbumsCarrousel";
 
 const formatDate = (dateString) => {
   const options = { month: "long", year: "numeric" };
@@ -30,7 +26,10 @@ const WelcomePage = () => {
   const [following, setFollowing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedAlbums, setSelectedAlbums] = useState([null, 0, 1]);
-  const [albumsLoading, setAlbumsLoading] = useState(true)
+  const [albumsLoading, setAlbumsLoading] = useState(true);
+  const [artistTracks, setArtistsTracks] = useState(null);
+  const [tracksLoading, setTracksLoading] = useState(true);
+  const [userIsFollowing, setUserIsFollowing] = useState(false);
 
   useEffect(() => {
     const getToken = async () => {
@@ -65,7 +64,27 @@ const WelcomePage = () => {
       };
       const artistAlbums = await axios(artistAlbumsOptions);
       setAlbums(artistAlbums);
-      setAlbumsLoading(false)
+      const artistTracksOptions = {
+        method: "GET",
+        params: {
+          artist: userArtists.data.items[0].id,
+          country: userProfile.data.country,
+        },
+        url: "/api/artistTracks",
+      };
+      const artistTracks = await axios(artistTracksOptions);
+      const userIsFollowingOptions = {
+        method: "GET",
+        params: {
+          artist: userArtists.data.items[0].id,
+        },
+        url: "/api/userFollows",
+      };
+      const userIsFollowing = await axios(userIsFollowingOptions);
+      setUserIsFollowing(userIsFollowing);
+      setArtistsTracks(artistTracks);
+      setAlbumsLoading(false);
+      setTracksLoading(false);
       setLoading(false);
     };
 
@@ -74,11 +93,12 @@ const WelcomePage = () => {
 
   const handleSelectorClick = (selection) => {
     setUserSelection(selection);
-    setSelectedAlbums([null, 0, 1])
+    setSelectedAlbums([null, 0, 1]);
   };
 
   const handleArtistSelection = async (clickedArtistId, spotifyId) => {
-    setAlbumsLoading(true)
+    setAlbumsLoading(true);
+    setTracksLoading(true);
     setSelectedArtist(clickedArtistId);
     const artistAlbumsOptions = {
       method: "GET",
@@ -87,6 +107,26 @@ const WelcomePage = () => {
     };
     const artistAlbums = await axios(artistAlbumsOptions);
     setAlbums(artistAlbums);
+    const artistTracksOptions = {
+      method: "GET",
+      params: {
+        artist: spotifyId,
+        country: user.data.country,
+      },
+      url: "/api/artistTracks",
+    };
+    const userIsFollowingOptions = {
+      method: "GET",
+      params: {
+        artist: spotifyId,
+      },
+      url: "/api/userFollows",
+    };
+    const userIsFollowing = await axios(userIsFollowingOptions);
+    const artistTracks = await axios(artistTracksOptions);
+    setUserIsFollowing(userIsFollowing);
+    setArtistsTracks(artistTracks);
+    setTracksLoading(false);
     setAlbumsLoading(false);
     setSelectedAlbums([null, 0, 1]);
   };
@@ -98,26 +138,40 @@ const WelcomePage = () => {
   const handleAlbumChangeNext = (albumList, currentSelection) => {
     if (currentSelection[0] === null) {
       setSelectedAlbums([0, 1, 2]);
-    } else if (selectedAlbums[2] == albumList.length -1) {
+    } else if (selectedAlbums[2] == albumList.length - 1) {
       setSelectedAlbums([albumList.length - 2, albumList.length - 1, null]);
     } else {
-      setSelectedAlbums(previousSelection => previousSelection.map(last => last+1)
+      setSelectedAlbums((previousSelection) =>
+        previousSelection.map((last) => last + 1)
       );
     }
   };
 
   const handleAlbumChangePrevious = (albumList, currentSelection) => {
     if (currentSelection[2] === null) {
-      setSelectedAlbums([albumList.length - 3, albumList.length - 2, albumList.length - 1]);
+      setSelectedAlbums([
+        albumList.length - 3,
+        albumList.length - 2,
+        albumList.length - 1,
+      ]);
     } else if (selectedAlbums[0] == 0) {
       setSelectedAlbums([null, 0, 1]);
     } else {
-      setSelectedAlbums(previousSelection => previousSelection.map(last => last-1)
+      setSelectedAlbums((previousSelection) =>
+        previousSelection.map((last) => last - 1)
       );
     }
   };
 
-  console.log(selectedAlbums)
+  const secondsFormat = (miliseconds) => {
+    const seconds = miliseconds / 1000;
+    if (seconds >= 3600) {
+      return new Date(seconds * 1000).toISOString().slice(11, 19);
+    }
+    return new Date(seconds * 1000).toISOString().slice(14, 19);
+  };
+
+  console.log("userFollowing", userIsFollowing.data[0]);
 
   if (loading) {
     return <AltContainer></AltContainer>;
@@ -197,7 +251,7 @@ const WelcomePage = () => {
           </div>
           <div
             className="row artists"
-            style={{ overflow: "scroll", height: "80vh" }}
+            style={{ overflow: "scroll", height: "89vh" }}
           >
             {userSelection == "Artists"
               ? artists.data.items.map((artist, index) => {
@@ -246,341 +300,114 @@ const WelcomePage = () => {
               display: "flex",
               textAlign: "center",
               paddingLeft: "10px",
+              margin: "0% 5%",
             }}
           >
             <div className="col-md-12">
-              <MainArtist
-                artistUrl={
-                  artists.data.items[selectedArtist].external_urls.spotify
-                }
-                artistImage={artists.data.items[selectedArtist].images[0].url}
-                artistName={artists.data.items[selectedArtist].name}
-                artistFollowers={
-                  artists.data.items[selectedArtist].followers.total
-                }
-                mainDisplay={true}
-              />
+              {tracksLoading ? (
+                <h3>Loading</h3>
+              ) : (
+                <MainArtist
+                  artistUrl={
+                    artists.data.items[selectedArtist].external_urls.spotify
+                  }
+                  artistImage={artists.data.items[selectedArtist].images[0].url}
+                  artistName={artists.data.items[selectedArtist].name}
+                  artistFollowers={
+                    artists.data.items[selectedArtist].followers.total
+                  }
+                  mainDisplay={true}
+                  isArtistFollowed={userIsFollowing.data[0]}
+                />
+              )}
             </div>
           </div>
           <div
             className="row justify-content-center"
             style={{
-              display: "block",
-              textAlign: "center",
-              overflowX: "hidden",
-              whiteSpace: "nowrap",
-              marginTop: "25px",
-              marginLeft: "2.5%",
-              width: "95%",
-              padding: "20px, 0",
-              height: "200px",
-            }}
-          >
-           {albumsLoading? <p>Loading</p>:<> <div
-              className="col-md-1"
-              style={{
-                display: "inline-block",
-                float: "none",
-                alignContent: "center",
-              }}
-            >
-              <Link
-                href="#"
-                style={{
-                  textDecoration: "none",
-                  display: "inline-block",
-                  padding: "8px 16px",
-                  borderRadius: "50%",
-                  background: "#A6E664",
-                  opacity: selectedAlbums[0] == null ?0.6:1,
-                  color: "white",
-                }}
-                onClick = {selectedAlbums[0] == null? ()=>{}:()=>{handleAlbumChangePrevious(albums.data.items, selectedAlbums)}}
-              >
-                &#8249;
-              </Link>
-            </div>
-            <div
-              className="col-md-3 album-main"
-              style={{
-                display: "inline-block",
-                float: "none",
-                alignContent: "center",
-                wordWrap: "break-word"
-              }}
-            >
-              <div
-                className="row justify-content-center"
-                style={{ alignItems: "center" }}
-              >
-                {selectedAlbums[0] == null ? (
-                  <></>
-                ) : (
-                  <>
-                    {" "}
-                    <Link
-                      href={
-                        albums.data.items[selectedAlbums[0]].external_urls
-                          .spotify
-                      }
-                      style={{
-                        textDecoration: "none",
-                        height: "60px",
-                        width: "60px",
-                        margin: "0px",
-                        padding: "0px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          backgroundImage: `url(${albums.data.items[selectedAlbums[0]].images[0].url})`,
-                          backgroundPosition: "center top",
-                          backgroundSize: "cover",
-                          backgroundRepeat: "no-repeat",
-                          height: "60px",
-                          width: "60px",
-                          borderRadius: "15px",
-                        }}
-                      />
-                    </Link>
-                    <Link
-                      href={
-                        albums.data.items[selectedAlbums[0]].external_urls
-                          .spotify
-                      }
-                      style={{ textDecoration: "none" }}
-                    >
-                      <div
-                        className="col-md-12"
-                        style={{
-                          marginTop: "6px",
-                          color: "#535353",
-                          marginBottom: "0px",
-                          overflow: "hidden",
-                          textAlign: "center"
-                        }}
-                      >
-                        <h6 style={{ marginBottom: "0px" }}>
-                          {albums.data.items[selectedAlbums[0]].name}
-                        </h6>
-                      </div>
-                    </Link>
-                    <div className="col-md-12" style={{ marginTop: "0px" }}>
-                      <p style={{ fontSize: "7px" }}>
-                        {formatDate(
-                          albums.data.items[selectedAlbums[0]].release_date
-                        )}
-                      </p>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-            <div
-              className="col-md-3 album-main"
-              style={{
-                maxWidth: "100%",
-                display: "inline-block",
-                float: "none",
-                alignContent: "center",
-              }}
-            >
-              <div
-                className="row justify-content-center"
-                style={{ alignItems: "center" }}
-              >
-                <Link
-                  href={
-                    albums.data.items[selectedAlbums[1]].external_urls.spotify
-                  }
-                  style={{
-                    textDecoration: "none",
-                    height: "100px",
-                    width: "100px",
-                    margin: "0px",
-                    padding: "0px",
-                  }}
-                >
-                  <div
-                    style={{
-                      backgroundImage: `url(${
-                        albums.data.items[selectedAlbums[1]].images[0].url
-                      })`,
-                      backgroundPosition: "center top",
-                      backgroundSize: "cover",
-                      backgroundRepeat: "no-repeat",
-                      height: "100px",
-                      width: "100px",
-                      borderRadius: "15px",
-                    }}
-                  />
-                </Link>
-                <Link
-                  href={
-                    albums.data.items[selectedAlbums[1]].external_urls.spotify
-                  }
-                  style={{ textDecoration: "none", textOverflow: "ellipsis" }}
-                >
-                  <div
-                    className="col-md-12"
-                    style={{
-                      marginTop: "6px",
-                      color: "#535353",
-                      marginBottom: "0px",
-                      overflow:"hidden"
-                    }}
-                  >
-                    <h5 className="overflow-ellipsis" style={{ marginBottom: "0px", textOverflow:"ellipses" }}>
-                      {albums.data.items[selectedAlbums[1]].name}
-                    </h5>
-                  </div>
-                </Link>
-                <div className="col-md-12" style={{ marginTop: "0px" }}>
-                  <p style={{ fontSize: "9px" }}>
-                    {formatDate(
-                      albums.data.items[selectedAlbums[1]].release_date
-                    )}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div
-              className="col-md-3 album-main"
-              style={{
-                display: "inline-block",
-                float: "none",
-                alignContent: "center",
-              }}
-            >
-              <div
-                className="row justify-content-center"
-                style={{ alignItems: "center" }}
-              >
-                {(selectedAlbums[2] == null || !selectedAlbums[2]) ? (
-                  <></>
-                ) : (
-                  <>
-                    {" "}
-                    <Link
-                      href={
-                        albums.data.items[selectedAlbums[2]].external_urls
-                          .spotify
-                      }
-                      style={{
-                        textDecoration: "none",
-                        height: "60px",
-                        width: "60px",
-                        margin: "0px",
-                        padding: "0px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          backgroundImage: `url(${
-                            albums.data.items[selectedAlbums[2]].images[0].url
-                          })`,
-                          backgroundPosition: "center top",
-                          backgroundSize: "cover",
-                          backgroundRepeat: "no-repeat",
-                          height: "60px",
-                          width: "60px",
-                          borderRadius: "15px",
-                        }}
-                      />
-                    </Link>
-                    <Link
-                      href={
-                        albums.data.items[selectedAlbums[2]].external_urls
-                          .spotify
-                      }
-                      style={{ textDecoration: "none" }}
-                    >
-                      <div
-                        className="col-md-12"
-                        style={{
-                          marginTop: "6px",
-                          color: "#535353",
-                          marginBottom: "0px",
-                          overflow:"hidden"
-                        }}
-                      >
-                        <h6 style={{ marginBottom: "0px" }}>
-                          {albums.data.items[selectedAlbums[2]].name}
-                        </h6>
-                      </div>
-                    </Link>
-                    <div className="col-md-12" style={{ marginTop: "0px" }}>
-                      <p style={{ fontSize: "7px" }}>
-                        {formatDate(
-                          albums.data.items[selectedAlbums[2]].release_date
-                        )}
-                      </p>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-            <div
-              className="col-md-1"
-              style={{
-                display: "inline-block",
-                float: "none",
-                alignContent: "center",
-              }}
-            >
-              <Link
-                href="#"
-                style={{
-                  textDecoration: "none",
-                  display: "inline-block",
-                  padding: "8px 16px",
-                  borderRadius: "50%",
-                  background: "#A6E664",
-                  opacity: selectedAlbums[2] == null ?0.6:1,
-                  color: "white",
-                }}
-                onClick = {selectedAlbums[2] == null? ()=>{}:()=>{handleAlbumChangeNext(albums.data.items, selectedAlbums)}}
-              >
-                &#8250;
-              </Link>
-            </div></>}
-          </div>
-          <div
-            className="row justify-content-center"
-            style={{
-              display: "block",
-              textAlign: "center",
+              display: "flex",
+              textAlign: "left",
               overflowX: "hidden",
               whiteSpace: "nowrap",
               marginTop: "10px",
-              marginLeft: "2.5%",
-              width: "95%",
+              marginLeft: "5%",
+              width: "90%",
               padding: "20px, 0",
-              height: "200px",
+              height: "500px",
             }}
           >
-            <div className="col-md-12" style={{margin:"0px", padding:"0px"}}>
+            <div
+              className="col-md-6"
+              style={{ margin: "0px", padding: "0px", paddingRight:"40px" }}
+            >
+              {tracksLoading ? (
+                <h4>Loading</h4>
+              ) : (
+                artistTracks.data.tracks.map((track) => {
+                  return (
+                    <div
+                      className="row artis-selection"
+                      style={{
+                        width: "100%",
+                        margin: "0px",
+                        marginBottom: "10px",
+                        borderRadius: "15px",
+                        height: "80px",
+                      }}
+                    >
+                      <div className="col-md-9">
+                        <h5 style={{ margin: "0px" }}>{track.name}</h5>
+                        <p
+                          style={{
+                            color: "grey",
+                            fontSize: "12px",
+                            paddingTop: "0",
+                            margin: "0",
+                          }}
+                        >
+                          {track.album.name}
+                        </p>
+                        <p
+                          style={{
+                            color: "grey",
+                            fontSize: "12px",
+                            paddingTop: "0",
+                            margin: "0",
+                          }}
+                        >
+                          {secondsFormat(track.duration_ms)}
+                        </p>
+                      </div>
+                      <div
+                        className="col-md-3"
+                        style={{
+                          background: `url(${track.album.images[0].url})`,
+                          backgroundPosition: "center",
+                          backgroundSize: "cover",
+                          backgroundRepeat: "no-repeat",
+                          height: "75px",
+                          width: "75px",
+                          borderRadius: "15px",
+                          marginRight: "0px",
+                          marginTop: "2.5px",
+                        }}
+                      ></div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+            <div className="col-md-6" style={{ margin: "0px", padding: "0px" }}>
               a
             </div>
           </div>
-          <div
-            className="row justify-content-center"
-            style={{
-              display: "block",
-              textAlign: "center",
-              overflowX: "hidden",
-              whiteSpace: "nowrap",
-              marginTop: "10px",
-              marginLeft: "2.5%",
-              width: "95%",
-              padding: "20px, 0",
-              height: "200px",
-            }}
-          >
-            <div className="col-md-12" style={{margin:"0px", padding:"0px"}}>
-              a
-            </div>
-          </div>
+          <AlbumsCarrousel
+            albumsLoading={albumsLoading}
+            selectedAlbums={selectedAlbums}
+            handleAlbumChangePrevious={handleAlbumChangePrevious}
+            handleAlbumChangeNext={handleAlbumChangeNext}
+            albums={albums}
+          ></AlbumsCarrousel>
         </div>
       </div>
     </AltContainer>
