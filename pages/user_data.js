@@ -171,7 +171,7 @@ const WelcomePage = () => {
     return new Date(seconds * 1000).toISOString().slice(14, 19);
   };
 
-  console.log("userFollowing", userIsFollowing.data[0]);
+  console.log("User following", userIsFollowing)
 
   if (loading) {
     return <AltContainer></AltContainer>;
@@ -318,6 +318,7 @@ const WelcomePage = () => {
                   }
                   mainDisplay={true}
                   isArtistFollowed={userIsFollowing.data[0]}
+                  artistId={artists.data.items[selectedArtist].id}
                 />
               )}
             </div>
@@ -336,6 +337,9 @@ const WelcomePage = () => {
               height: "500px",
             }}
           >
+            <div className="col-md-3" style={{ margin: "0px", padding: "0px" }}>
+              
+              </div>
             <div
               className="col-md-6"
               style={{ margin: "0px", padding: "0px", paddingRight:"40px" }}
@@ -397,8 +401,8 @@ const WelcomePage = () => {
                 })
               )}
             </div>
-            <div className="col-md-6" style={{ margin: "0px", padding: "0px" }}>
-              a
+            <div className="col-md-3" style={{ margin: "0px", padding: "0px" }}>
+              
             </div>
           </div>
           <AlbumsCarrousel

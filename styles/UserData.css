@@ -19,3 +19,15 @@
 .artis-selection:hover {
   background-color: rgba(166, 230, 100,0.7);
 }
+
+.artist-follow {
+  width: 30px;
+  left: 80%;
+  transition-timing-function: ease-in-out;
+  transition: 0.5s;
+}
+
+.artist-follow:hover {
+  width: 80px;
+  left: 50%;
+}

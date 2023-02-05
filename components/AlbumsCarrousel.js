@@ -48,6 +48,7 @@ const AlbumsCarrousel = (props) => {
                       opacity: props.selectedAlbums[0] == null ? 0.6 : 1,
                       color: "white",
                     }}
+                    scroll={false}
                     onClick={
                       props.selectedAlbums[0] == null
                         ? () => {}
@@ -316,6 +317,7 @@ const AlbumsCarrousel = (props) => {
                       opacity: props.selectedAlbums[2] == null ? 0.6 : 1,
                       color: "white",
                     }}
+                    scroll={false}
                     onClick={
                       props.selectedAlbums[2] == null
                         ? () => {}

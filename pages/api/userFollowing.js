@@ -1,6 +1,6 @@
-import { serialize } from "cookie";
 import {getSession} from 'next-auth/react';
-import {getUsersFollowing} from '../../lib/spotify'
+import {getUsersFollowing} from '../../lib/spotify';
+
 
 export default async(req, res) => {
   req.statusCode = 200;
