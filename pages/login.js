@@ -16,7 +16,7 @@ const LoginPage = () => {
         <div
           className="col-md-6 col-lg-4"
           style={{
-            height: "50vh",
+            height: "60vh",
             width: "25%",
             background: "white",
             borderRadius: "10px",
@@ -100,7 +100,7 @@ const LoginPage = () => {
         <div
           className="col-md-6 col-lg-4"
           style={{
-            height: "50vh",
+            height: "60vh",
             width: "25%",
             background: "white",
             borderRadius: "10px",
@@ -179,4 +179,6 @@ const LoginPage = () => {
   );
 };
 
+
 export default LoginPage;
+

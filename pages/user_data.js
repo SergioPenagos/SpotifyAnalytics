@@ -171,10 +171,22 @@ const WelcomePage = () => {
     return new Date(seconds * 1000).toISOString().slice(14, 19);
   };
 
-  console.log("User following", userIsFollowing)
+  console.log("User following", userIsFollowing);
 
   if (loading) {
-    return <AltContainer></AltContainer>;
+    return (
+      <div className="loader-container">
+        <div className="loader">
+          <span className="stroke"></span>
+          <span className="stroke"></span>
+          <span className="stroke"></span>
+          <span className="stroke"></span>
+          <span className="stroke"></span>
+          <span className="stroke"></span>
+          <span className="stroke"></span>
+        </div>
+      </div>
+    );
   }
   return (
     <AltContainer>
@@ -288,130 +300,157 @@ const WelcomePage = () => {
         </div>
         <div
           className="col-md-9 col-lg-10"
-          style={{
+          style={tracksLoading ?{
+            justifyContent: "center",
+            alignItems: "center",
+            alignContent: "center",
+            display:"flex"
+          }:{
             justifyContent: "center",
             alignItems: "center",
             alignContent: "center",
           }}
         >
-          <div
-            className="row"
-            style={{
-              display: "flex",
-              textAlign: "center",
-              paddingLeft: "10px",
-              margin: "0% 5%",
-            }}
-          >
-            <div className="col-md-12">
-              {tracksLoading ? (
-                <h3>Loading</h3>
-              ) : (
-                <MainArtist
-                  artistUrl={
-                    artists.data.items[selectedArtist].external_urls.spotify
-                  }
-                  artistImage={artists.data.items[selectedArtist].images[0].url}
-                  artistName={artists.data.items[selectedArtist].name}
-                  artistFollowers={
-                    artists.data.items[selectedArtist].followers.total
-                  }
-                  mainDisplay={true}
-                  isArtistFollowed={userIsFollowing.data[0]}
-                  artistId={artists.data.items[selectedArtist].id}
-                />
-              )}
-            </div>
+          {tracksLoading ? (
+            <div className="loader">
+            <span className="stroke-alt"></span>
+            <span className="stroke-alt"></span>
+            <span className="stroke-alt"></span>
+            <span className="stroke-alt"></span>
+            <span className="stroke-alt"></span>
+            <span className="stroke-alt"></span>
+            <span className="stroke-alt"></span>
           </div>
-          <div
-            className="row justify-content-center"
-            style={{
-              display: "flex",
-              textAlign: "left",
-              overflowX: "hidden",
-              whiteSpace: "nowrap",
-              marginTop: "10px",
-              marginLeft: "5%",
-              width: "90%",
-              padding: "20px, 0",
-              height: "500px",
-            }}
-          >
-            <div className="col-md-3" style={{ margin: "0px", padding: "0px" }}>
-              
+          ) : (
+            <>
+              <div
+                className="row"
+                style={{
+                  display: "flex",
+                  textAlign: "center",
+                  paddingLeft: "10px",
+                  margin: "0% 5%",
+                }}
+              >
+                <div className="col-md-12">
+                  {tracksLoading ? (
+                    <h3>Loading</h3>
+                  ) : (
+                    <MainArtist
+                      artistUrl={
+                        artists.data.items[selectedArtist].external_urls.spotify
+                      }
+                      artistImage={
+                        artists.data.items[selectedArtist].images[0].url
+                      }
+                      artistName={artists.data.items[selectedArtist].name}
+                      artistFollowers={
+                        artists.data.items[selectedArtist].followers.total
+                      }
+                      mainDisplay={true}
+                      isArtistFollowed={userIsFollowing.data[0]}
+                      artistId={artists.data.items[selectedArtist].id}
+                    />
+                  )}
+                </div>
               </div>
-            <div
-              className="col-md-6"
-              style={{ margin: "0px", padding: "0px", paddingRight:"40px" }}
-            >
-              {tracksLoading ? (
-                <h4>Loading</h4>
-              ) : (
-                artistTracks.data.tracks.map((track) => {
-                  return (
-                    <div
-                      className="row artis-selection"
-                      style={{
-                        width: "100%",
-                        margin: "0px",
-                        marginBottom: "10px",
-                        borderRadius: "15px",
-                        height: "80px",
-                      }}
-                    >
-                      <div className="col-md-9">
-                        <h5 style={{ margin: "0px" }}>{track.name}</h5>
-                        <p
+              <div
+                className="row justify-content-center"
+                style={{
+                  display: "flex",
+                  textAlign: "left",
+                  overflowX: "hidden",
+                  whiteSpace: "nowrap",
+                  marginTop: "10px",
+                  marginLeft: "5%",
+                  width: "90%",
+                  padding: "20px, 0",
+                  height: "500px",
+                }}
+              >
+                <div
+                  className="col-md-3"
+                  style={{ margin: "0px", padding: "0px" }}
+                ></div>
+                <div
+                  className="col-md-6"
+                  style={{
+                    margin: "0px",
+                    padding: "0px",
+                    paddingRight: "40px",
+                  }}
+                >
+                  {tracksLoading ? (
+                    <h4>Loading</h4>
+                  ) : (
+                    artistTracks.data.tracks.map((track) => {
+                      return (
+                        <div
+                          className="row artis-selection"
                           style={{
-                            color: "grey",
-                            fontSize: "12px",
-                            paddingTop: "0",
-                            margin: "0",
+                            width: "100%",
+                            margin: "0px",
+                            marginBottom: "10px",
+                            borderRadius: "15px",
+                            height: "80px",
                           }}
                         >
-                          {track.album.name}
-                        </p>
-                        <p
-                          style={{
-                            color: "grey",
-                            fontSize: "12px",
-                            paddingTop: "0",
-                            margin: "0",
-                          }}
-                        >
-                          {secondsFormat(track.duration_ms)}
-                        </p>
-                      </div>
-                      <div
-                        className="col-md-3"
-                        style={{
-                          background: `url(${track.album.images[0].url})`,
-                          backgroundPosition: "center",
-                          backgroundSize: "cover",
-                          backgroundRepeat: "no-repeat",
-                          height: "75px",
-                          width: "75px",
-                          borderRadius: "15px",
-                          marginRight: "0px",
-                          marginTop: "2.5px",
-                        }}
-                      ></div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-            <div className="col-md-3" style={{ margin: "0px", padding: "0px" }}>
-              
-            </div>
-          </div>
-          <AlbumsCarrousel
-            albumsLoading={albumsLoading}
-            selectedAlbums={selectedAlbums}
-            handleAlbumChangePrevious={handleAlbumChangePrevious}
-            handleAlbumChangeNext={handleAlbumChangeNext}
-            albums={albums}
-          ></AlbumsCarrousel>
+                          <div className="col-md-9">
+                            <h5 style={{ margin: "0px" }}>{track.name}</h5>
+                            <p
+                              style={{
+                                color: "grey",
+                                fontSize: "12px",
+                                paddingTop: "0",
+                                margin: "0",
+                              }}
+                            >
+                              {track.album.name}
+                            </p>
+                            <p
+                              style={{
+                                color: "grey",
+                                fontSize: "12px",
+                                paddingTop: "0",
+                                margin: "0",
+                              }}
+                            >
+                              {secondsFormat(track.duration_ms)}
+                            </p>
+                          </div>
+                          <div
+                            className="col-md-3"
+                            style={{
+                              background: `url(${track.album.images[0].url})`,
+                              backgroundPosition: "center",
+                              backgroundSize: "cover",
+                              backgroundRepeat: "no-repeat",
+                              height: "75px",
+                              width: "75px",
+                              borderRadius: "15px",
+                              marginRight: "0px",
+                              marginTop: "2.5px",
+                            }}
+                          ></div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+                <div
+                  className="col-md-3"
+                  style={{ margin: "0px", padding: "0px" }}
+                ></div>
+              </div>
+              <AlbumsCarrousel
+                albumsLoading={albumsLoading}
+                selectedAlbums={selectedAlbums}
+                handleAlbumChangePrevious={handleAlbumChangePrevious}
+                handleAlbumChangeNext={handleAlbumChangeNext}
+                albums={albums}
+              ></AlbumsCarrousel>
+            </>
+          )}
         </div>
       </div>
     </AltContainer>

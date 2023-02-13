@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth';
 import SpotifyProvider from 'next-auth/providers/spotify';
 
-export default NextAuth({
+export const NextAuthOptions = {
   providers: [
     SpotifyProvider({
       authorization:
@@ -22,4 +22,12 @@ export default NextAuth({
       return session;
     },
   },
-});
+  pages: {
+    signIn: '/signIn',
+    signOut: '/signOut',
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+}
+
+export default NextAuth(NextAuthOptions);
+
