@@ -263,7 +263,7 @@ const WelcomePage = () => {
           </div>
           <div
             className="row artists"
-            style={{ overflow: "scroll", height: "89vh" }}
+            style={{ overflow: "scroll", height: "60rem" }}
           >
             {userSelection == "Artists"
               ? artists.data.items.map((artist, index) => {
@@ -300,27 +300,31 @@ const WelcomePage = () => {
         </div>
         <div
           className="col-md-9 col-lg-10"
-          style={tracksLoading ?{
-            justifyContent: "center",
-            alignItems: "center",
-            alignContent: "center",
-            display:"flex"
-          }:{
-            justifyContent: "center",
-            alignItems: "center",
-            alignContent: "center",
-          }}
+          style={
+            tracksLoading
+              ? {
+                  justifyContent: "center",
+                  alignItems: "center",
+                  alignContent: "center",
+                  display: "flex",
+                }
+              : {
+                  justifyContent: "center",
+                  alignItems: "center",
+                  alignContent: "center",
+                }
+          }
         >
           {tracksLoading ? (
             <div className="loader">
-            <span className="stroke-alt"></span>
-            <span className="stroke-alt"></span>
-            <span className="stroke-alt"></span>
-            <span className="stroke-alt"></span>
-            <span className="stroke-alt"></span>
-            <span className="stroke-alt"></span>
-            <span className="stroke-alt"></span>
-          </div>
+              <span className="stroke-alt"></span>
+              <span className="stroke-alt"></span>
+              <span className="stroke-alt"></span>
+              <span className="stroke-alt"></span>
+              <span className="stroke-alt"></span>
+              <span className="stroke-alt"></span>
+              <span className="stroke-alt"></span>
+            </div>
           ) : (
             <>
               <div
@@ -395,7 +399,16 @@ const WelcomePage = () => {
                             height: "80px",
                           }}
                         >
-                          <div className="col-md-9">
+                          <div
+                            className="col-md-9"
+                            style={{
+                              display: "inline-block",
+                              float: "none",
+                              alignContent: "center",
+                              wordWrap: "break-word",
+                              overflow: "hidden",
+                            }}
+                          >
                             <h5 style={{ margin: "0px" }}>{track.name}</h5>
                             <p
                               style={{

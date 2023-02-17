@@ -17,8 +17,8 @@ export default function SignIn({ providers }) {
         <div
           className="col-md-6 col-lg-4"
           style={{
-            height: "60vh",
-            width: "25%",
+            height: "35rem",
+            width: "100%",
             background: "white",
             borderRadius: "10px",
             boxShadow:"rgba(0, 0, 0, 0.35) 0px 5px 15px"
@@ -48,9 +48,9 @@ export default function SignIn({ providers }) {
             ></div>
           </div>
           <div style={{padding:"10px 20%", alignItems:"center", alignContent:"center", textAlign:"center"}}>
-            <h4>
+            <h1 style={{fontFamily:"Roboto", fontWeight:400, fontSize:"50px"}}>
               Scan Your Spotify Profile
-            </h4>
+            </h1>
           </div>
           <div
             style={{
@@ -64,13 +64,14 @@ export default function SignIn({ providers }) {
           >
             {Object.values(providers).map((provider) => (
               <Link
+              className="login-button"
               key = {provider.id}
               href="/user_data"
               style={{
                 display: "table",
                 fontSize: "90%",
                 color: "white",
-                width: "40%",
+                width: "15%",
                 textDecoration: "None",
               }}
               onClick={() => signIn(provider.id)}
@@ -85,10 +86,9 @@ export default function SignIn({ providers }) {
                   borderRadius: "500px",
                   textAlign: "center",
                   verticalAlign: "middle",
-                  border: "1px solid black"
                 }}
               >
-                <h5 style={{ paddingTop: "5%" }}>Sign in with {provider.name}</h5>
+                <h5 style={{ paddingTop: "5%" }}>Check Profile</h5>
               </div>
             </Link>
             ))}
