@@ -7,7 +7,7 @@ export default async(req, res) => {
   const {
     token: {accessToken},
   } = await getSession({req});
-  const response = await getUsersTopTracks(accessToken);
+  const response = await getUsersTopTracks(accessToken, req.query.offset, req.query.limit);
   const items = await response.data;
   res.json(items)
 };

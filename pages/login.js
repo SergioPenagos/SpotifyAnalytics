@@ -5,7 +5,6 @@ import Link from "next/link";
 const axios = require("axios");
 
 const LoginPage = () => {
-  const {data: session} = useSession();
   const backgroundImage =
     "https://www.freepnglogos.com/uploads/spotify-logo-png/file-spotify-logo-png-4.png";
   
